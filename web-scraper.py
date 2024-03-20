@@ -23,13 +23,21 @@ url_encodes = [
 for old, new in url_encodes:
     search_query = re.sub(old,new,search_query).lower()
 
+# Ask user if they want to scrape for the most recent posts or popular posts
+post_type = input("Do you want to scrape (R)ecent posts or (P)opular posts?:\n")
+
 # Concatenate search URL and search query
-search_url = 'https://www.linkedin.com/search/results/content/?keywords=' + search_query + "&origin=FACETED_SEARCH&sid=_HP&sortBy=%22date_posted%22"
+if post_type == "R":
+     search_url = 'https://www.linkedin.com/search/results/content/?keywords=' + search_query + "&origin=FACETED_SEARCH&sortBy=%22date_posted%22"
+else:
+     search_url = 'https://www.linkedin.com/search/results/content/?keywords=' + search_query + "&origin=FACETED_SEARCH&sortBy=%22relevance%22"
 
 # ----- Login to LinkedIn with selenium webdriver -----
 
 # Create webdriver instance
 driver = webdriver.Chrome()
+
+print("Opening up a Chrome window and logging in...")
 
 # Open linkedIn's login page
 driver.get("https://www.linkedin.com/login")
@@ -58,6 +66,8 @@ time.sleep(15)
 
 # Open link
 driver.get(search_url) 
+
+print("Scrolling through the feed and scraping data...")
 
 # Scroll to bottom
 start = time.time()
@@ -228,3 +238,5 @@ with open('/Users/azntaiji/Downloads/' + str(timestamp) + '_LinkedIn_Scrape' + '
 	writer = csv.writer(file)
 	writer.writerow(['Post Date', 'Post URL', 'Author/Company Name', 'Author Title', 'Author/Company Profile URL', 'Company Followers', 'Post Text', 'Post Likes', 'Post Comments', 'Post Reposts'])
 	writer.writerows(zip(*combined_data))
+     
+print("File saved! Check downloads folder.")
