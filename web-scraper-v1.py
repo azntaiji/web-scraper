@@ -105,6 +105,7 @@ for date in date_html:
     
 # List sub regexes for dates
 date_transformations = [
+    (r'\d+m','0'),     
     (r'\d+h','0'),
     (r'(\d+)d','\\1'),
     (r'1w','7'),
