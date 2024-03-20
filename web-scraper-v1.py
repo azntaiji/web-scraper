@@ -8,9 +8,6 @@ import csv
 import time
 import re
 
-current_date_time = datetime.now()
-current_date = current_date_time.date()
-
 # ----- Search Query -----
 
 # Query user for search term
@@ -67,7 +64,7 @@ start = time.time()
 
 # will be used in the while loop
 initialScroll = 0
-finalScroll = 4000
+finalScroll = 5000
 
 while True:
 	driver.execute_script(f"window.scrollTo({initialScroll},{finalScroll})")
@@ -76,7 +73,7 @@ while True:
 	# variable to the pixel value stored at the
 	# finalScroll variable
 	initialScroll = finalScroll
-	finalScroll += 4000
+	finalScroll += 5000
 
 	# we will stop the script for 3 seconds so that 
 	# the data can load
@@ -85,9 +82,9 @@ while True:
 
 	end = time.time()
 
-	# We will scroll for 20 seconds.
+	# We will scroll for 60 seconds.
 	# You can change it as per your needs and internet speed
-	if round(end - start) > 5:
+	if round(end - start) > 60:
 		break
       
 # ----- Extract Data -----
@@ -203,7 +200,7 @@ for text in post_text_html:
 	post_text.append(text.text.lower().strip())
       
 # Extract Engagements
-engagement_html = soup.select("div.social-details-social-counts > div > div > ul")
+engagement_html = soup.select("div.update-v2-social-activity")
 
 likes = []
 comments = []
@@ -212,7 +209,7 @@ reposts = []
 strip_engagements = '\scomments|\scomment|\sreposts|\srepost'
 
 for x in engagement_html:
-      likes.append(re.sub(r'\s+', ' ', x.text.strip()).split(" ")[0])
+      likes.append(re.sub(r'\s+|like|Like', ' ', x.text.strip()).split(" ")[0])
       comments.append(re.sub(strip_engagements, '', ''.join(re.findall('\d+\scomments|1\scomment', x.text.strip()))))
       reposts.append(re.sub(strip_engagements, '', ''.join(re.findall('(\d+\sreposts|1\srepost)', x.text.strip()))))
 
@@ -222,8 +219,11 @@ for x in engagement_html:
 combined_data = [post_date, post_url, author_name, author_title, author_url, company_followers, post_text, likes, comments, reposts]
 #print(combined_data)
 
+# Set current timestamp
+timestamp = datetime.now().strftime("%Y-%m-%d_%H.%M.%S")
+
 # Write list to CSV
-with open('/Users/azntaiji/Downloads/' + str(current_date) + '_LinkedIn_Scrape' + '.csv', 'w', newline='') as file:
+with open('/Users/azntaiji/Downloads/' + str(timestamp) + '_LinkedIn_Scrape' + '.csv', 'w', newline='') as file:
 	writer = csv.writer(file)
 	writer.writerow(['Post Date', 'Post URL', 'Author/Company Name', 'Author Title', 'Author/Company Profile URL', 'Company Followers', 'Post Text', 'Post Likes', 'Post Comments', 'Post Reposts'])
 	writer.writerows(zip(*combined_data))

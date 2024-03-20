@@ -46,5 +46,5 @@ https://www.geeksforgeeks.org/scrape-linkedin-using-selenium-and-beautiful-soup-
 
 # Cleanup todos
 
-- [ ] Lower everything and transform i.e. [here](https://www.datacamp.com/tutorial/case-conversion-python) plus dates. etc. Do this last.
-- [ ] Need to split company followers
+- [X] Lower everything and transform i.e. [here](https://www.datacamp.com/tutorial/case-conversion-python) plus dates. etc. Do this last.
+- [X] Need to split company followers
