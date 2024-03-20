@@ -23,14 +23,35 @@ url_encodes = [
 for old, new in url_encodes:
     search_query = re.sub(old,new,search_query).lower()
 
-# Ask user if they want to scrape for the most recent posts or popular posts
-post_type = input("Do you want to scrape (R)ecent posts or (P)opular posts?:\n")
+# Ask user if they want to scrape for the most recent posts or popular posts and then concatenate search URL and search query
+while True:
+    post_type = input("Do you want to scrape [R]ecent posts or [P]opular posts?:\n")
+    if post_type == "R":
+        search_url = 'https://www.linkedin.com/search/results/content/?keywords=' + search_query + "&origin=FACETED_SEARCH&sortBy=%22date_posted%22"
+        break
+    elif post_type == "P":
+        search_url = 'https://www.linkedin.com/search/results/content/?keywords=' + search_query + "&origin=FACETED_SEARCH&sortBy=%22relevance%22"
+        break
+    else:
+        print("You entered an invalid response. Please try again by entering 'R' or 'P'.")
 
-# Concatenate search URL and search query
-if post_type == "R":
-     search_url = 'https://www.linkedin.com/search/results/content/?keywords=' + search_query + "&origin=FACETED_SEARCH&sortBy=%22date_posted%22"
-else:
-     search_url = 'https://www.linkedin.com/search/results/content/?keywords=' + search_query + "&origin=FACETED_SEARCH&sortBy=%22relevance%22"
+# Ask user how many posts they want to scrape
+while True:
+    post_quantity = input("Approximately how many posts do you want to scrape? Please enter one of the below options, entering 1-4:\n\n[1]: 30-40\n[2]: 50-60\n[3]: 100-120\n[4]: 200+\n")
+    if post_quantity == "1":
+        scrape_length = 15
+        break
+    elif post_quantity == "2":
+        scrape_length = 30
+        break
+    elif post_quantity == "3":
+        scrape_length = 60
+        break
+    elif post_quantity == "4":
+        scrape_length = 120
+        break
+    else:
+         print("You entered an invalid response. Please try again.")
 
 # ----- Login to LinkedIn with selenium webdriver -----
 
@@ -59,6 +80,8 @@ pword.send_keys("taijisan")
 
 # Click on the log in button
 driver.find_element(By.XPATH, "//button[@type='submit']").click()
+
+print("You have 15 seconds to complete the verification check. Please complete it now.")
 
 time.sleep(15)
 
@@ -94,7 +117,7 @@ while True:
 
 	# We will scroll for 60 seconds.
 	# You can change it as per your needs and internet speed
-	if round(end - start) > 60:
+	if round(end - start) > scrape_length:
 		break
       
 # ----- Extract Data -----
@@ -115,6 +138,7 @@ for date in date_html:
     
 # List sub regexes for dates
 date_transformations = [  
+    (r'now', '0'),
     (r'\d+h','0'),
     (r'(\d+)d','\\1'),
     (r'1w','7'),
