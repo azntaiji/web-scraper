@@ -114,8 +114,7 @@ for date in date_html:
     raw_dates.append(re.sub(r'\s•.*','',date.text.strip()))
     
 # List sub regexes for dates
-date_transformations = [
-    (r'\d+m','0'),     
+date_transformations = [  
     (r'\d+h','0'),
     (r'(\d+)d','\\1'),
     (r'1w','7'),
@@ -139,7 +138,8 @@ date_transformations = [
     (r'11mo','330'),
     (r'12mo','365'),
     (r'1yr','365'),
-    (r'2yr','730')
+    (r'2yr','730'),
+    (r'\d+m','0')
 ]
 
 # Loop through date regexes to turn raw LinkedIn dates into number of days
