@@ -14,36 +14,37 @@ https://www.geeksforgeeks.org/scrape-linkedin-using-selenium-and-beautiful-soup-
 - [x] Add keyword before result: `https://www.linkedin.com/feed/update/`
 
 # Author/Company Name
-- [ ] Selector: `div.update-components-actor span.update-components-actor__name span.visually-hidden`
+- [x] Selector: `div.update-components-actor span.update-components-actor__name span.visually-hidden`
 
 # Author Title
-- [ ] Selector: `div.update-components-actor span.update-components-actor__description span.visually-hidden`
-- [ ] Replace Regex with Value: `/\d+\,*\d+\Wfollowers/gm`
+- [x] Selector: `div.update-components-actor span.update-components-actor__description span.visually-hidden`
+- [x] Replace Regex with Value: `/\d+\,*\d+\Wfollowers/gm`
 
 # Author/Company Profile URL
-- [ ] Extract URL from `div.update-components-actor.display-flex.update-components-actor--with-control-menu div.update-components-actor__container > a`
-- [ ] Split on keyword `?` and take nth value of `1`
+- [x] Extract URL from `div.update-components-actor.display-flex.update-components-actor--with-control-menu div.update-components-actor__container > a`
+- [x] Split on keyword `?` and take nth value of `1`
 
 # Company Followers
-- [ ] Selector `div.update-components-actor span.update-components-actor__description span.visually-hidden`
-- [ ] Replace regex `/(^\D*)/gm` with value ``
-- [ ] Keep everything before keyword `followers`
+- [x] Selector `div.update-components-actor span.update-components-actor__description span.visually-hidden`
+- [x] Replace regex `/(^\D*)/gm` with value ``
+- [x] Keep everything before keyword `followers`
 
 # Post Text
-- [ ] Selector `span.break-words span`
+- [X] Selector `span.break-words span`
 
 # Post Likes
-- [ ] Selector `.social-details-social-counts__item.social-details-social-counts__reactions.social-details-social-counts__reactions--left-aligned`
-- [ ] Split on keyword ` ` and take nth value `1`
+- [X] Selector `.social-details-social-counts__item.social-details-social-counts__reactions.social-details-social-counts__reactions--left-aligned`
+- [x] Split on keyword ` ` and take nth value `1`
 
 # Comments
-- [ ] Selector `li.social-details-social-counts__item.social-details-social-counts__comments`
+- [X] Selector `li.social-details-social-counts__item.social-details-social-counts__comments`
 - Split on keyword `com` and take nth value `1`
 
 # Reposts
-- [ ] Selector `button.ember-view.t-black--light.t-12.hoverable-link-text`
-- [ ] Keep everything before keyword ` `
+- [X] Selector `button.ember-view.t-black--light.t-12.hoverable-link-text`
+- [X] Keep everything before keyword ` `
 
 # Cleanup todos
 
-- [ ] Lower everything and transform i.e. [here](https://www.datacamp.com/tutorial/case-conversion-python)
+- [ ] Lower everything and transform i.e. [here](https://www.datacamp.com/tutorial/case-conversion-python) plus dates. etc. Do this last.
+- [ ] Need to split company followers
