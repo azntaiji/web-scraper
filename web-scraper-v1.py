@@ -3,7 +3,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
-from datetime import datetime
+from datetime import datetime, timedelta
 import csv
 import time
 import re
@@ -94,15 +94,62 @@ while True:
 	
 # Extract data from entire page
 search_src = driver.page_source # This gets the source code of the current page
-soup = BeautifulSoup(search_src, 'lxml') # This sets var soup
+soup = BeautifulSoup(search_src, 'lxml') # This sets source code to var soup
 
-# Extract post dates
+# Extract post dates source code
 date_html = soup.select("div.update-components-actor--with-control-menu span.update-components-actor__sub-description div span > span:nth-of-type(1)")
  
-post_date = []
+# Create raw date var as empty list
+raw_dates = []
  
+# Pull date text from source code and add to list
 for date in date_html:
-    post_date.append(re.sub(r'\s•.*','',date.text.strip()))
+    raw_dates.append(re.sub(r'\s•.*','',date.text.strip()))
+    
+# List sub regexes for dates
+date_transformations = [
+    (r'\d+h','0'),
+    (r'(\d+)d','\\1'),
+    (r'1w','7'),
+    (r'2w','14'),
+    (r'3w','21'),
+    (r'4w','28'),
+    (r'5w','35'),
+    (r'6w','42'),
+    (r'7w','49'),
+    (r'8w','56'),
+    (r'1mo','30'),
+    (r'2mo','60'),
+    (r'3mo','90'),
+    (r'4mo','120'),
+    (r'5mo','150'),
+    (r'6mo','180'),
+    (r'7mo','210'),
+    (r'8mo','240'),
+    (r'9mo','270'),
+    (r'10mo','300'),
+    (r'11mo','330'),
+    (r'12mo','365'),
+    (r'1yr','365'),
+    (r'2yr','730')
+]
+
+# Loop through date regexes to turn raw LinkedIn dates into number of days
+for x in range(len(raw_dates)):
+    for old, new in date_transformations:
+        raw_dates[x] = re.sub(old, new, raw_dates[x])
+
+# Convert raw dates list to int
+days_list = [int(x) for x in raw_dates]
+
+# Get current date and time
+current_date = datetime.now().date()
+
+# Calculate the differences between the current date and each number of days in the list
+result_dates = [current_date - timedelta(days=days) for days in days_list]
+
+# Convert the result dates to post date strings in a specific format
+post_date = [date.strftime("%Y-%m-%d") for date in result_dates]
 
 # Extract Post URL
 url_html = soup.find_all('div', {'class': 'feed-shared-update-v2'})
@@ -148,7 +195,6 @@ for each_url_tag in author_url_html:
     author_url.append(re.sub('\?.*','',href_attrb_value.strip()))
     
 # Extract post text
-    
 post_text_html = soup.select("div.feed-shared-update-v2__description-wrapper > div > div.update-components-text > span.break-words > span")
     
 post_text = []
@@ -157,7 +203,6 @@ for text in post_text_html:
 	post_text.append(text.text.lower().strip())
       
 # Extract Engagements
-      
 engagement_html = soup.select("div.social-details-social-counts > div > div > ul")
 
 likes = []
@@ -173,12 +218,12 @@ for x in engagement_html:
 
 # ----- Write Data to CSV -----
 
-# Combine arrays
-combined_data = [post_date, post_url, author_name, author_title, author_url, company_followers,post_text, likes, comments, reposts]
-print(combined_data)
+# Combine lists into single list
+combined_data = [post_date, post_url, author_name, author_title, author_url, company_followers, post_text, likes, comments, reposts]
+#print(combined_data)
 
-# Write to CSV
-with open('/Users/azntaiji/Downloads/' + str(current_date) + '_' + search_query + '.csv', 'w', newline='') as file:
+# Write list to CSV
+with open('/Users/azntaiji/Downloads/' + str(current_date) + '_LinkedIn_Scrape' + '.csv', 'w', newline='') as file:
 	writer = csv.writer(file)
-	writer.writerow(['Post Date','Post URL','Author/Company Name','Author Title','Author/Company Profile URL','Company Followers','Post Text','Post Likes','Post Comments','Post Reposts'])
+	writer.writerow(['Post Date', 'Post URL', 'Author/Company Name', 'Author Title', 'Author/Company Profile URL', 'Company Followers', 'Post Text', 'Post Likes', 'Post Comments', 'Post Reposts'])
 	writer.writerows(zip(*combined_data))
