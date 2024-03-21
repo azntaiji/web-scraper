@@ -255,6 +255,10 @@ for x in engagement_html:
       comments.append(re.sub(strip_engagements, '', ''.join(re.findall('\d+\scomments|1\scomment', x.text.strip()))))
       reposts.append(re.sub(strip_engagements, '', ''.join(re.findall('(\d+\sreposts|1\srepost)', x.text.strip()))))
 
+# ----- Abbott and competitors Regexes ---
+      
+# TODO: Next up.
+
 # ----- Write Data to CSV -----
 
 # Combine lists into single list
