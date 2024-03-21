@@ -1,4 +1,4 @@
-# Version 1.1
+# Version 1.3.0
 
 # ----- Import dependencies -----
 
@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 import csv
 import time
 import re
+import getpass
 
 # ----- Search Query -----
 
@@ -55,6 +56,10 @@ while True:
     else:
          print("You entered an invalid response. Please try again.")
 
+# Prompt for username and password
+user_name = input("Enter your username (name@email):\n")
+user_passwd = getpass.getpass(prompt="Enter your password:\n")
+
 # ----- Login to LinkedIn with selenium webdriver -----
 
 # Create webdriver instance
@@ -72,13 +77,13 @@ time.sleep(2)
 username = driver.find_element(By.ID, "username")
 
 # Enter Your Email Address
-username.send_keys("zach@azntaiji.com") 
+username.send_keys(user_name) 
 
 # entering password
 pword = driver.find_element(By.ID, "password")
 
 # Enter Your Password
-pword.send_keys("taijisan")	 
+pword.send_keys(user_passwd)	 
 
 # Click on the log in button
 driver.find_element(By.XPATH, "//button[@type='submit']").click()
