@@ -1,3 +1,5 @@
+# Version 1.1
+
 # ----- Import dependencies -----
 
 from selenium import webdriver
