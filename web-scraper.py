@@ -24,16 +24,16 @@ url_encodes = [
 
 # Loop through URL encode regex replacements, applying to search query
 for old, new in url_encodes:
-    search_query = re.sub(old,new,search_query).lower()
+    encoded_search_query = re.sub(old,new,search_query).lower()
 
 # Ask user if they want to scrape for the most recent posts or popular posts and then concatenate search URL and search query
 while True:
     post_type = input("Do you want to scrape [R]ecent posts or [P]opular posts?:\n")
     if post_type == "R":
-        search_url = 'https://www.linkedin.com/search/results/content/?keywords=' + search_query + "&origin=FACETED_SEARCH&sortBy=%22date_posted%22"
+        search_url = 'https://www.linkedin.com/search/results/content/?keywords=' + encoded_search_query + "&origin=FACETED_SEARCH&sortBy=%22date_posted%22"
         break
     elif post_type == "P":
-        search_url = 'https://www.linkedin.com/search/results/content/?keywords=' + search_query + "&origin=FACETED_SEARCH&sortBy=%22relevance%22"
+        search_url = 'https://www.linkedin.com/search/results/content/?keywords=' + encoded_search_query + "&origin=FACETED_SEARCH&sortBy=%22relevance%22"
         break
     else:
         print("You entered an invalid response. Please try again by entering 'R' or 'P'.")
@@ -88,7 +88,7 @@ pword.send_keys(user_passwd)
 # Click on the log in button
 driver.find_element(By.XPATH, "//button[@type='submit']").click()
 
-print("You have 15 seconds to complete the verification check. Please complete it now.")
+print("You have 15 seconds to complete the verification check. Please complete it now. If no verification check is shown, please wait 15 seconds...")
 
 time.sleep(15)
 
@@ -107,25 +107,27 @@ initialScroll = 0
 finalScroll = 5000
 
 while True:
-	driver.execute_script(f"window.scrollTo({initialScroll},{finalScroll})")
+    driver.execute_script(f"window.scrollTo({initialScroll},{finalScroll})")
 	# this command scrolls the window starting from
 	# the pixel value stored in the initialScroll 
 	# variable to the pixel value stored at the
 	# finalScroll variable
-	initialScroll = finalScroll
-	finalScroll += 5000
+    initialScroll = finalScroll
+    finalScroll += 5000
 
 	# we will stop the script for 3 seconds so that 
 	# the data can load
-	time.sleep(5)
+    time.sleep(5)
 	# You can change it as per your needs and internet speed
 
-	end = time.time()
+    end = time.time()
+
+    print("...")
 
 	# We will scroll for 60 seconds.
 	# You can change it as per your needs and internet speed
-	if round(end - start) > scrape_length:
-		break
+    if round(end - start) > scrape_length:
+        break
       
 # ----- Extract Data -----
 	
@@ -196,8 +198,8 @@ url_html = soup.find_all('div', {'class': 'feed-shared-update-v2'})
 post_url = []
 
 for each_url_tag in url_html:
-      data_urn_attrb_value = "https://www.linkedin.com/feed/update/" + each_url_tag["data-urn"]
-      post_url.append(data_urn_attrb_value)
+    data_urn_attrb_value = "https://www.linkedin.com/feed/update/" + each_url_tag["data-urn"]
+    post_url.append(data_urn_attrb_value)
 
 # Extract author names
 author_html = soup.select("div.update-components-actor--with-control-menu span.update-components-actor__name > span:nth-of-type(1)")
@@ -221,8 +223,7 @@ followers_html = soup.select("div.update-components-actor--with-control-menu spa
 company_followers = []
 
 for x in followers_html:
-    company_followers.append(
-          re.sub('(^\D*)','',x.text.strip().split("followers")[0]))
+    company_followers.append(re.sub('(^\D*)','',x.text.strip().split("followers")[0]))
     
 # Extract Author URL
 author_url_html = soup.select("div.update-components-actor--with-control-menu div.update-components-actor__container > a:nth-of-type(1)")
@@ -251,13 +252,9 @@ reposts = []
 strip_engagements = '\scomments|\scomment|\sreposts|\srepost'
 
 for x in engagement_html:
-      likes.append(re.sub(r'\s+|like|Like', ' ', x.text.strip()).split(" ")[0])
-      comments.append(re.sub(strip_engagements, '', ''.join(re.findall('\d+\scomments|1\scomment', x.text.strip()))))
-      reposts.append(re.sub(strip_engagements, '', ''.join(re.findall('(\d+\sreposts|1\srepost)', x.text.strip()))))
-
-# ----- Abbott and competitors Regexes ---
-      
-# TODO: Next up.
+    likes.append(re.sub(r'\s+|like|Like', ' ', x.text.strip()).split(" ")[0])
+    comments.append(re.sub(strip_engagements, '', ''.join(re.findall('\d+\scomments|1\scomment', x.text.strip()))))
+    reposts.append(re.sub(strip_engagements, '', ''.join(re.findall('(\d+\sreposts|1\srepost)', x.text.strip()))))
 
 # ----- Write Data to CSV -----
 
@@ -269,7 +266,7 @@ combined_data = [post_date, post_url, author_name, author_title, author_url, com
 timestamp = datetime.now().strftime("%Y-%m-%d_%H.%M.%S")
 
 # Write list to CSV
-with open('/Users/azntaiji/Downloads/' + str(timestamp) + '_LinkedIn_Scrape' + '.csv', 'w', newline='') as file:
+with open('/Users/azntaiji/Downloads/' + search_query + "_" + str(timestamp) + '.csv', 'w', newline='') as file:
 	writer = csv.writer(file)
 	writer.writerow(['Post Date', 'Post URL', 'Author/Company Name', 'Author Title', 'Author/Company Profile URL', 'Company Followers', 'Post Text', 'Post Likes', 'Post Comments', 'Post Reposts'])
 	writer.writerows(zip(*combined_data))
