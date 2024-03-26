@@ -88,9 +88,9 @@ pword.send_keys(user_passwd)
 # Click on the log in button
 driver.find_element(By.XPATH, "//button[@type='submit']").click()
 
-print("You have 15 seconds to complete the verification check. Please complete it now. If no verification check is shown, please wait 15 seconds...")
+print("You have 10 seconds to complete the verification check. Please complete it now. If no verification check is shown, please wait 15 seconds...")
 
-time.sleep(15)
+time.sleep(10)
 
 # ----- Open feed of search query -----
 
@@ -256,10 +256,21 @@ for x in engagement_html:
     comments.append(re.sub(strip_engagements, '', ''.join(re.findall('\d+\scomments|1\scomment', x.text.strip()))))
     reposts.append(re.sub(strip_engagements, '', ''.join(re.findall('(\d+\sreposts|1\srepost)', x.text.strip()))))
 
+# Function to replace all blank values in a list with 0
+def replace_blanks_with_zero(lst):
+    return [0 if not item else item for item in lst]
+
+# Replacing blank values in all three lists
+likes = replace_blanks_with_zero(likes)
+comments = replace_blanks_with_zero(comments)
+reposts = replace_blanks_with_zero(reposts)
+
+engagements = [int(a) + int(b) + int(c) for a, b, c in zip(likes, comments, reposts)]
+
 # ----- Write Data to CSV -----
 
 # Combine lists into single list
-combined_data = [post_date, post_url, author_name, author_title, author_url, company_followers, post_text, likes, comments, reposts]
+combined_data = [post_date, post_url, author_name, author_title, author_url, company_followers, post_text, likes, comments, reposts, engagements]
 #print(combined_data)
 
 # Set current timestamp
@@ -268,7 +279,7 @@ timestamp = datetime.now().strftime("%Y-%m-%d_%H.%M.%S")
 # Write list to CSV
 with open('/Users/azntaiji/Downloads/' + search_query + "_" + str(timestamp) + '.csv', 'w', newline='') as file:
 	writer = csv.writer(file)
-	writer.writerow(['Post Date', 'Post URL', 'Author/Company Name', 'Author Title', 'Author/Company Profile URL', 'Company Followers', 'Post Text', 'Post Likes', 'Post Comments', 'Post Reposts'])
+	writer.writerow(['Post Date', 'Post URL', 'Author/Company Name', 'Author Title', 'Author/Company Profile URL', 'Company Followers', 'Post Text', 'Post Likes', 'Post Comments', 'Post Reposts', 'Total Engagements'])
 	writer.writerows(zip(*combined_data))
      
 print("File saved! Check downloads folder.")
