@@ -235,7 +235,7 @@ for each_url_tag in author_url_html:
     author_url.append(re.sub('\?.*','',href_attrb_value.strip()))
     
 # Extract post text
-post_text_html = soup.select("div.feed-shared-update-v2__description-wrapper > div > div.update-components-text > span.break-words > span")
+post_text_html = soup.select("div.feed-shared-update-v2 > div > div:nth-of-type(4)")
     
 post_text = []
 
