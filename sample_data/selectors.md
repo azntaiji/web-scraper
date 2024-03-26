@@ -18,7 +18,7 @@
 
         b. Author Name:
 
-        `span.update-components-actor__title > span.update-components-actor__name > span:nth-of-type(1)`
+        `span.update-components-actor__title > span.update-components-actor__name > span > span:nth-of-type(1)`
 
         c. Author Title:
 

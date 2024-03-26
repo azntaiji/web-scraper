@@ -29,10 +29,10 @@ for old, new in url_encodes:
 # Ask user if they want to scrape for the most recent posts or popular posts and then concatenate search URL and search query
 while True:
     post_type = input("Do you want to scrape [R]ecent posts or [P]opular posts?:\n")
-    if post_type == "R":
+    if post_type == "R" or "r":
         search_url = 'https://www.linkedin.com/search/results/content/?keywords=' + encoded_search_query + "&origin=FACETED_SEARCH&sortBy=%22date_posted%22"
         break
-    elif post_type == "P":
+    elif post_type == "P" or "p":
         search_url = 'https://www.linkedin.com/search/results/content/?keywords=' + encoded_search_query + "&origin=FACETED_SEARCH&sortBy=%22relevance%22"
         break
     else:
@@ -136,7 +136,7 @@ search_src = driver.page_source # This gets the source code of the current page
 soup = BeautifulSoup(search_src, 'lxml') # This sets source code to var soup
 
 # Extract post dates source code
-date_html = soup.select("div.update-components-actor--with-control-menu span.update-components-actor__sub-description div span > span:nth-of-type(1)")
+date_html = soup.select("div.pt1.mb2.artdeco-card > div > div > div.feed-shared-update-v2 > div > div.update-components-actor > div.update-components-actor__container > div.update-components-actor__meta > a > span.update-components-actor__sub-description > div > span > span:nth-of-type(1)")
  
 # Create raw date var as empty list
 raw_dates = []
@@ -202,7 +202,7 @@ for each_url_tag in url_html:
     post_url.append(data_urn_attrb_value)
 
 # Extract author names
-author_html = soup.select("div.update-components-actor--with-control-menu span.update-components-actor__name > span:nth-of-type(1)")
+author_html = soup.select("div.pt1.mb2.artdeco-card > div > div > div.feed-shared-update-v2 > div > div.update-components-actor > div.update-components-actor__container > div.update-components-actor__meta > a > span.update-components-actor__title > span.update-components-actor__name > span > span:nth-of-type(1)")
  
 author_name = []
 
@@ -210,30 +210,22 @@ for author in author_html:
     author_name.append(author.text.strip())
     
 # Extract author title
-title_html = soup.select("div.update-components-actor--with-control-menu span.update-components-actor__description > span:nth-of-type(1)")
+title_html = soup.select("div.pt1.mb2.artdeco-card > div > div > div.feed-shared-update-v2 > div > div.update-components-actor > div.update-components-actor__container > div.update-components-actor__meta > a > span.update-components-actor__description > span:nth-of-type(1)")
  
 author_title = []
 
 for x in title_html:
     author_title.append(re.sub('\d+\,*\d+\Wfollowers','',x.text.strip()))
     
-# Extract company followers
-followers_html = soup.select("div.update-components-actor--with-control-menu span.update-components-actor__description > span:nth-of-type(1)")
- 
-company_followers = []
-
-for x in followers_html:
-    company_followers.append(re.sub('(^\D*)','',x.text.strip().split("followers")[0]))
-    
 # Extract Author URL
-author_url_html = soup.select("div.update-components-actor--with-control-menu div.update-components-actor__container > a:nth-of-type(1)")
+author_url_html = soup.select("div.pt1.mb2.artdeco-card > div > div > div.feed-shared-update-v2 > div > div.update-components-actor > div.update-components-actor__container > div.update-components-actor__meta > a:nth-of-type(1)")
 
 author_url = []
 
 for each_url_tag in author_url_html:
     href_attrb_value = each_url_tag["href"]
     author_url.append(re.sub('\?.*','',href_attrb_value.strip()))
-    
+
 # Extract post text
 post_text_html = soup.select("div.feed-shared-update-v2 > div > div:nth-of-type(4)")
     
@@ -243,7 +235,7 @@ for text in post_text_html:
 	post_text.append(text.text.strip())
       
 # Extract Engagements
-engagement_html = soup.select("div.update-v2-social-activity")
+engagement_html = soup.select("div.pt1.mb2.artdeco-card > div > div > div.feed-shared-update-v2 > div > div.update-v2-social-activity")
 
 likes = []
 comments = []
@@ -252,9 +244,9 @@ reposts = []
 strip_engagements = '\scomments|\scomment|\sreposts|\srepost'
 
 for x in engagement_html:
-    likes.append(re.sub(r'\s+|like|Like', ' ', x.text.strip()).split(" ")[0])
-    comments.append(re.sub(strip_engagements, '', ''.join(re.findall('\d+\scomments|1\scomment', x.text.strip()))))
-    reposts.append(re.sub(strip_engagements, '', ''.join(re.findall('(\d+\sreposts|1\srepost)', x.text.strip()))))
+    likes.append(re.sub(r',', '', re.sub(r'\s+|like|Like', ' ', x.text.strip()).split(" ")[0]))
+    comments.append(re.sub(r',', '', re.sub(strip_engagements, '', ''.join(re.findall('\d+\scomments|1\scomment', x.text.strip())))))
+    reposts.append(re.sub(r',', '', re.sub(strip_engagements, '', ''.join(re.findall('(\d+\sreposts|1\srepost)', x.text.strip())))))
 
 # Function to replace all blank values in a list with 0
 def replace_blanks_with_zero(lst):
@@ -270,8 +262,7 @@ engagements = [int(a) + int(b) + int(c) for a, b, c in zip(likes, comments, repo
 # ----- Write Data to CSV -----
 
 # Combine lists into single list
-combined_data = [post_date, post_url, author_name, author_title, author_url, company_followers, post_text, likes, comments, reposts, engagements]
-#print(combined_data)
+combined_data = [post_date, post_url, author_name, author_title, author_url, post_text, likes, comments, reposts, engagements]
 
 # Set current timestamp
 timestamp = datetime.now().strftime("%Y-%m-%d_%H.%M.%S")
@@ -279,7 +270,7 @@ timestamp = datetime.now().strftime("%Y-%m-%d_%H.%M.%S")
 # Write list to CSV
 with open('/Users/azntaiji/Downloads/' + search_query + "_" + str(timestamp) + '.csv', 'w', newline='') as file:
 	writer = csv.writer(file)
-	writer.writerow(['Post Date', 'Post URL', 'Author/Company Name', 'Author Title', 'Author/Company Profile URL', 'Company Followers', 'Post Text', 'Post Likes', 'Post Comments', 'Post Reposts', 'Total Engagements'])
+	writer.writerow(['Post Date', 'Post URL', 'Author/Company Name', 'Author Title', 'Author/Company Profile URL', 'Post Text', 'Post Likes', 'Post Comments', 'Post Reposts', 'Total Engagements'])
 	writer.writerows(zip(*combined_data))
      
 print("File saved! Check downloads folder.")
