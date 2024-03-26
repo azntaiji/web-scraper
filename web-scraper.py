@@ -240,7 +240,7 @@ post_text_html = soup.select("div.feed-shared-update-v2 > div > div:nth-of-type(
 post_text = []
 
 for text in post_text_html:
-	post_text.append(text.text.lower().strip())
+	post_text.append(text.text.strip())
       
 # Extract Engagements
 engagement_html = soup.select("div.update-v2-social-activity")
