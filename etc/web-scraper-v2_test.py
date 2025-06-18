@@ -16,7 +16,7 @@ search_query = input("Enter search term:\n")
 # ----- Data Scraping -----
 
 # open test file pass to BS
-with open('/Users/azntaiji/seafile/Developer/python/web-scraper/sample_data/test-page.html', 'r') as file:
+with open('/Users/azntaiji/seafile/Developer/python/web-scraper/etc/sample_data/test-page.html', 'r') as file:
     soup = BeautifulSoup(file, 'lxml')
 
 # Find all post containers
@@ -120,21 +120,21 @@ for post in posts:
         post_text = None
 
     if likes:
-        like_count = re.sub(r'(\d+).*', r'\1', likes.get_text(strip=True), flags=re.IGNORECASE)
+        like_count = int(re.sub(r'(\d+).*', r'\1', likes.get_text(strip=True), flags=re.IGNORECASE))
     else:
         like_count = 0
 
     if comments:
-        comment_count = re.sub(r'^(.*?)\s.*', r'\1', comments.get_text(strip=True), flags=re.IGNORECASE)
+        comment_count = int(re.sub(r'^(.*?)\s.*', r'\1', comments.get_text(strip=True), flags=re.IGNORECASE))
     else:
         comment_count = 0
 
     if reposts:
-        repost_count = re.sub(r'^(.*?)\s.*', r'\1', reposts.get_text(strip=True), flags=re.IGNORECASE)
+        repost_count = int(re.sub(r'^(.*?)\s.*', r'\1', reposts.get_text(strip=True), flags=re.IGNORECASE))
     else:
         repost_count = 0
 
-    engagements = int(like_count) + int(comment_count) + int(repost_count)
+    engagements = like_count + comment_count + repost_count
 
     data.append({
         'search_query': search_query,
@@ -155,6 +155,8 @@ df = pd.DataFrame(data)
 
 # Show the resulting table
 print(df)
+
+# ----- Write Data to Excel file -----
 
 # Set current timestamp
 timestamp = datetime.now().strftime("%Y-%m-%d_%H.%M.%S")
