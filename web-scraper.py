@@ -19,7 +19,8 @@ search_query = input("Enter search term:\n")
 # Store URL encode regex replacements (old,new) as a list
 url_encodes = [
     ('\s','%20'),
-    ('#','%23')
+    ('#','%23'),
+    ('"','%22')
 ]
 
 # Loop through URL encode regex replacements, applying to search query
@@ -33,7 +34,7 @@ while True:
         search_url = 'https://www.linkedin.com/search/results/content/?keywords=' + encoded_search_query + "&origin=FACETED_SEARCH&sortBy=%22date_posted%22"
         break
     elif post_type == "P" or "p":
-        search_url = 'https://www.linkedin.com/search/results/content/?keywords=' + encoded_search_query + "&origin=SWITCH_SEARCH_VERTICAL"
+        search_url = 'https://www.linkedin.com/search/results/content/?keywords=' + encoded_search_query + "&origin=FACETED_SEARCH&sortBy=%22relevance%22"
         break
     else:
         print("You entered an invalid response. Please try again by entering 'R' or 'P'.")
