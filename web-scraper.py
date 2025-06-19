@@ -6,10 +6,19 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
+import os
 import time
 import re
 import pandas as pd
 import getpass
+
+# ----- Load env vars and username/password-----
+
+load_dotenv()
+
+user_name = os.getenv('USERNAME')
+user_passwd = os.getenv('PASSWORD')
 
 # ----- Search Query -----
 
@@ -29,12 +38,14 @@ for old, new in url_encodes:
 
 # Ask user if they want to scrape for the most recent posts or popular posts and then concatenate search URL and search query
 while True:
-    post_type = input("Do you want to scrape [R]ecent posts or [P]opular posts?:\n")
-    if post_type == "R" or "r":
-        search_url = 'https://www.linkedin.com/search/results/content/?keywords=' + encoded_search_query + "&origin=FACETED_SEARCH&sortBy=%22date_posted%22"
+    post_type = input("Do you want to scrape [R]ecent posts or [P]opular posts?:\n").strip().lower()
+    if post_type == "r":
+        search_url = 'https://www.linkedin.com/search/results/content/?keywords=%22' + encoded_search_query + "%22&origin=FACETED_SEARCH&sortBy=%22date_posted%22"
+        post_type_title = "recent-posts"
         break
-    elif post_type == "P" or "p":
-        search_url = 'https://www.linkedin.com/search/results/content/?keywords=' + encoded_search_query + "&origin=FACETED_SEARCH&sortBy=%22relevance%22"
+    elif post_type == "p":
+        search_url = 'https://www.linkedin.com/search/results/content/?keywords=%22' + encoded_search_query + "%22&origin=FACETED_SEARCH&sortBy=%22relevance%22"
+        post_type_title = "popular-posts"
         break
     else:
         print("You entered an invalid response. Please try again by entering 'R' or 'P'.")
@@ -56,10 +67,6 @@ while True:
         break
     else:
          print("You entered an invalid response. Please try again.")
-
-# Prompt for username and password
-user_name = input("Enter your username (name@email):\n")
-user_passwd = getpass.getpass(prompt="Enter your password:\n")
 
 # ----- Login to LinkedIn with selenium webdriver -----
 
@@ -296,7 +303,7 @@ print(df)
 timestamp = datetime.now().strftime("%Y-%m-%d_%H.%M.%S")
 
 # set filename and export to excel
-filename = '/Users/azntaiji/Downloads/' + search_query + "_" + str(timestamp) + '.xlsx'
+filename = '/Users/azntaiji/Downloads/' + search_query + "_" + post_type_title + "_" + str(timestamp) + '.xlsx'
 df.to_excel(filename, index=False)
 
 print("File saved! Check downloads folder.")
