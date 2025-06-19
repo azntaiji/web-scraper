@@ -166,6 +166,7 @@ for post in posts:
     if date:
         # List sub regexes for dates
         date_transformations = [
+            (r'published\s•\s', ''),
             (r'^(.*?)\s•.*', r'\1'),
             (r'now', '0'),
             (r'\d+h','0'),
@@ -192,6 +193,11 @@ for post in posts:
             (r'12mo','365'),
             (r'1yr','365'),
             (r'2yr','730'),
+            (r'3yr','1095'),
+            (r'4yr','1460'),
+            (r'5yr','1825'),
+            (r'6yr','2190'),
+            (r'7yr','2555'),
             (r'\d+m','0')
         ]
 
